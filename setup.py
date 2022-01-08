@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyqt6rc",
-    version="0.1.0",
+    version="0.1.1",
     license='MIT',
     author="Martin Domaracký",
     author_email="domarm@comat.sk",
@@ -18,7 +18,6 @@ setuptools.setup(
         'pyqt6rc.scripts': ['pyqt6rc'],
         'pyqt6rc.test.myPackage': ["*/*"],
         'pyqt6rc.test.myPackage.resources': ["*/*"],
-        # 'pyqt6rc.test.myPackage': ["templates/*"],
     },
     scripts=['pyqt6rc/scripts/pyqt6rc'],
     classifiers=[
