@@ -33,7 +33,6 @@ with path("myPackage.resources.icons", "icon1.png") as f_path:
 Package structure example
 ```
 myPackage
-│   README.md
 │   __init__.py    
 │
 └───resources
