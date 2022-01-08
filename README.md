@@ -21,7 +21,7 @@ icon = QtGui.QIcon()
 icon.addPixmap(QtGui.QPixmap(":/icons/icon1.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 ```
 
-Generated template by pyqt6rc:
+Generated template by pyqt6rc script:
 ```python
 icon = QtGui.QIcon()
 with path("myPackage.resources.icons", "icon1.png") as f_path:
