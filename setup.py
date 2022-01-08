@@ -5,18 +5,17 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyqt6rc",
-    version="0.0.1",
+    version="0.0.7",
     license='MIT',
     author="Martin Domaracký",
     author_email="domarm@comat.sk",
     description="PyQt6 UI templates resource converter",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/domarm-comat/crawlMpGui",
+    url="https://github.com/domarm-comat/pyqt6rc",
     packages=setuptools.find_packages(),
-    package_data={'crawlMpGui.resources': ['*.*'],
-                  'crawlMpGui.templates': ['*.*']},
-    scripts=['crawlMpGui/scripts/search_fs_mp_gui'],
+    package_data={'pyqt6rc.scripts': ['pyqt6rc']},
+    scripts=['pyqt6rc/scripts/pyqt6rc'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
@@ -26,10 +25,8 @@ setuptools.setup(
         "Intended Audience :: Science/Research",
     ],
     install_requires=[
-        "pyqt6",
-        "pyqt6-tools"
+        "pyqt6>=6.0.0",
+        "pyqt6-tools>=6.0.0"
     ],
-    extras_requires={
-    },
     python_requires='>=3.7',
 )

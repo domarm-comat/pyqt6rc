@@ -4,31 +4,46 @@ import argparse
 import os
 import sys
 
+from pyqt6rc import __version__
 from pyqt6rc.tools import parse_qrc, ui_to_py, modify_py, save_py, get_ui_files
 
-description = "yup"
+description = [
+    f"pyqt6rc v{__version__}",
+    "PyQt6 UI templates resource converter.",
+    "Default input location is Current Working Directory.",
+    "",
+    "Usage examples:",
+    "  Convert all .ui files in CWD:",
+    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources",
+    "",
+    "  Convert all .ui files in directory:",
+    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources -i /directory/with/templates",
+    "",
+    "  Convert all .ui files in CWD, save output in different directory:",
+    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources -o /directory/with/converted/templates",
+    "",
+]
 
 arguments = sys.argv
 parser = argparse.ArgumentParser(
     formatter_class=argparse.RawTextHelpFormatter,
     description="\r\n".join(description)
 )
-parser.add_argument("input", type=str,
+parser.add_argument("qrc", type=str, help="Path to .qrc file")
+parser.add_argument("-i", "--input", type=str,
                     help="Path to .ui template file or Directory containing .ui files."
                          "If empty, scan current working directory and use all .ui template files.",
                     default="*")
-parser.add_argument("-q", "--qrc", type=str, help="Path to .qrc file")
-parser.add_argument("-p", "--package", type=str, help="Name of the resource package")
+parser.add_argument("-p", "--package", type=str, help="Name of the resource package", required=True)
 parser.add_argument("-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4)
 parser.add_argument("-o", "--out", type=str, help="Output directory to save converted templates.", default=None)
 parser.add_argument("-v", "--version", help="pyqt6rc version", action='store_true')
 args = parser.parse_args()
 
 if not os.path.exists(args.qrc):
-    raise Exception(f"Resource file {args.input} does not exists.")
-
+    raise Exception(f"Resource file {args.qrc} does not exists.")
 if args.input == "*":
-    input_files = get_ui_files(os.path.dirname(os.path.realpath(__file__)))
+    input_files = get_ui_files(os.getcwd())
 elif os.path.isdir(args.input):
     input_files = get_ui_files(args.input)
 else:
