@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file './myPackage/templates/template1.ui'
+# Form implementation generated from reading ui file 'pyqt6rc/test/myPackage/templates/template1.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #
