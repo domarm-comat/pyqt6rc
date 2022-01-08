@@ -1,62 +1,124 @@
 import os
-import re
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
+from typing import List, Optional
 
 from pyqt6rc import resource_pattern, indent_pattern
 
 
-def parse_qrc(qrc_file):
-    tree = Et.parse(qrc_file)
-    root = tree.getroot()
+def parse_qrc(qrc_file: str) -> dict:
+    """
+    Parse qrc xml file and extract prefixes and aliases.
+    :param str qrc_file: path to qrc_file
+    :return dict: parsed qrc
+    """
+    treer = Et.parse(qrc_file)
+    root = treer.getroot()
 
     if root.tag != "RCC":
         raise Exception(f"Invalid Resource file format.")
 
-    # Read resource tree
-    tree = {}
+    resources = {}
     for child in root:
         if child.tag == "qresource":
-            files = []
+            aliases = {}
             for file_child in child:
-                files.append((file_child.attrib.get("alias", ""), file_child.text))
-            tree["/" + child.attrib.get("prefix", "")] = files
+                alias = file_child.attrib.get("alias", None)
+                if alias is not None:
+                    aliases[file_child.text] = alias
+            resources["/" + child.attrib.get("prefix", "/")] = aliases
+    return resources
 
-    return tree
 
-
-def ui_to_py(ui_file):
+def ui_to_py(ui_file: str) -> str:
+    """
+    Use pyuic6 to convert ui template into py file
+    :param str ui_file: input ui template file
+    :return str: converted python template
+    """
     return os.popen(f"pyuic6 {ui_file}").read()
 
 
-def modify_py(package, py_input, qrc, tab_size=4):
+def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
+    """
+    Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
+    :param str package: resource package
+    :param str py_input: converted python template
+    :param dict qrc: parsed qrc
+    :param int tab_size: number of spaces in one tab
+    :return str: modified python template
+    """
     output = ""
-    included = False
+    imported = False
     tab = " " * tab_size
 
     for line in py_input.split("\n"):
-        out = resource_pattern.search(line)
-        if not included and line.startswith("from"):
+        # Check if path was imported
+        if not imported and line.startswith("from"):
             output += "from importlib.resources import path\n"
-            included = True
+            imported = True
+        # Check if any resource path is in line
+        out = resource_pattern.search(line)
         if out is not None:
             tabs = indent_pattern.search(line)
-            path = "/"
+            path = None
+            # Check if resource path starts with any of the prefixes
             for prefix in qrc.keys():
                 if out[1].startswith(prefix):
+                    # make file path by removing prefix from it
                     path = out[1][len(prefix):]
                     break
+            if path is None:
+                # Prefix doesn't exist in qrc file, skip the line
+                continue
+
+            # Split file path into parts
             path_parts = list(filter(None, dirname(path).split("/")))
-            pckg = ".".join([package] + list(path_parts))
+            # Make final resource_package name
+            resource_package = ".".join([package] + list(path_parts))
+            # Get file name
             f_name = basename(out[1])
-            output += f"{tabs[0]}with path(\"{pckg}\", \"{f_name}\") as f_path:\n"
+            output += f"{tabs[0]}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
             line = tab + line.replace(out[0], f"str(f_path)")
 
+        # Append new line into output
         output += line + "\n"
     return output
 
-def save_py(ui_file, py_input):
-    parts = ui_file.split(".")
+
+def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> None:
+    """
+    Save python template into file.
+    Use ui filename and change .ui suffix to .py.
+    If output_dir is None, use same dir as a .ui template file to store converted .py template.
+    :param str ui_file: input ui template file
+    :param str py_input: converted python template
+    :param str output_dir: output directory
+    :return: None
+    """
+    filename = os.path.basename(ui_file)
+    parts = filename.split(".")
     parts[-1] = "py"
-    with open(".".join(parts), "w") as fp:
+
+    if output_dir is None:
+        output_dir = os.path.dirname(ui_file)
+    else:
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+
+    output_filename = os.path.join(output_dir, ".".join(parts))
+    with open(output_filename, "w") as fp:
         fp.write(py_input)
+
+
+def get_ui_files(input_dir: str) -> List[str]:
+    """
+    Get all .ui template files in input directory
+    :param str input_dir:input directory
+    :return list: list of .ui files
+    """
+    files = []
+    for entry in os.scandir(input_dir):
+        if entry.is_file(follow_symlinks=False) and entry.name.endswith(".ui"):
+            files.append(entry.path)
+    return files
