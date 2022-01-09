@@ -12,8 +12,8 @@ def parse_qrc(qrc_file: str) -> dict:
     :param str qrc_file: path to qrc_file
     :return dict: parsed qrc
     """
-    treer = Et.parse(qrc_file)
-    root = treer.getroot()
+    tree = Et.parse(qrc_file)
+    root = tree.getroot()
 
     if root.tag != "RCC":
         raise Exception(f"Invalid Resource file format.")
@@ -75,7 +75,7 @@ def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
             # Split file path into parts
             path_parts = list(filter(None, dirname(path).split("/")))
             # Make final resource_package name
-            resource_package = ".".join([package] + list(path_parts))
+            resource_package = ".".join([package] + path_parts)
             # Get file name
             f_name = basename(out[1])
             output += f"{tabs[0]}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
