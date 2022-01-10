@@ -1,3 +1,4 @@
+import logging
 import os
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
@@ -26,7 +27,10 @@ def parse_qrc(qrc_file: str) -> dict:
                 alias = file_child.attrib.get("alias", None)
                 if alias is not None:
                     aliases[file_child.text] = alias
-            resources["/" + child.attrib.get("prefix", "/")] = aliases
+            prefix = "/" + child.attrib.get("prefix", "")
+            if not prefix.endswith("/"):
+                prefix += "/"
+            resources[prefix] = aliases
     return resources
 
 
@@ -69,7 +73,9 @@ def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
                     path = out[1][len(prefix):]
                     break
             if path is None:
-                # Prefix doesn't exist in qrc file, skip the line
+                # Prefix doesn't exist in qrc file, comment out that line
+                logging.warning(f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file.")
+                output += "# " + line + "\n"
                 continue
 
             # Split file path into parts
@@ -96,8 +102,8 @@ def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> No
     :param str output_dir: output directory
     :return: None
     """
-    filename = os.path.basename(ui_file)
-    parts = filename.split(".")
+    input_filename = os.path.basename(ui_file)
+    parts = input_filename.split(".")
     parts[-1] = "py"
 
     if output_dir is None:
@@ -106,9 +112,11 @@ def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> No
         if not os.path.exists(output_dir):
             os.mkdir(output_dir)
 
-    output_filename = os.path.join(output_dir, ".".join(parts))
-    with open(output_filename, "w") as fp:
+    output_filename = ".".join(parts)
+    output_filename_path = os.path.join(output_dir, output_filename)
+    with open(output_filename_path, "w") as fp:
         fp.write(py_input)
+    logging.info(f"{input_filename} > {output_filename}")
 
 
 def get_ui_files(input_dir: str) -> List[str]:
@@ -121,4 +129,5 @@ def get_ui_files(input_dir: str) -> List[str]:
     for entry in os.scandir(input_dir):
         if entry.is_file(follow_symlinks=False) and entry.name.endswith(".ui"):
             files.append(entry.path)
+    logging.info(f"Found {len(files)} .ui files")
     return files

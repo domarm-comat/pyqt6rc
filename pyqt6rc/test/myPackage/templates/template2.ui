@@ -52,7 +52,7 @@
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/resources.qrc">:/images/image2.png</pixmap>
+      <pixmap resource="../resources/resources.qrc">:/images_non_existent/image2.png</pixmap>
      </property>
     </widget>
    </item>
