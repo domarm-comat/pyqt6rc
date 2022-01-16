@@ -37,7 +37,7 @@ def parse_qrc(qrc_file: str) -> dict:
     return resources
 
 
-def update_resources(ui_file: str, resources: Dict) -> None:
+def update_resources(ui_file: str, resources: Dict) -> str:
     """
     Read ui file and collect all input resource files.
     :param str ui_file: input ui template
@@ -51,6 +51,7 @@ def update_resources(ui_file: str, resources: Dict) -> None:
         raise Exception(f"Invalid template file format.")
 
     ui_dir = os.path.dirname(ui_file)
+    location = None
     for child in root:
         if child.tag == "resources":
             for include in child:
@@ -58,6 +59,7 @@ def update_resources(ui_file: str, resources: Dict) -> None:
                 if location is not None:
                     resource_location = os.path.normpath(os.path.join(ui_dir, location))
                     resources.update(parse_qrc(resource_location))
+    return dirname(location)
 
 
 def ui_to_py(ui_file: str) -> str:
@@ -120,6 +122,69 @@ def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4, c
 
         # Append new line into output
         output += line + "\n"
+    return output
+
+
+def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_size: int = 4) -> str:
+    """
+    Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
+    :param str py_input: converted python template
+    :param dict resources: collected resources
+    :param int tab_size: number of spaces in one tab
+    :return str: modified python template
+    """
+    output = ""
+    imported = False
+    def_placeholder = False
+    tab = " " * tab_size
+    prefix_resources = set()
+    placeholder = f"#{tab}__PLACEHOLDER__"
+
+    for index, line in enumerate(py_input.split("\n")):
+        # Check if path was imported
+        if not imported and line.startswith("from"):
+            # Import all required packages
+            output += "import os\n" \
+                      "from os.path import dirname, normpath\n" \
+                      "from PyQt6.QtCore import QDir\n"
+            imported = True
+        elif not def_placeholder and line.startswith(f"{tab}def setupUi"):
+            # Append placeholder after setupUi definition
+            line = line + "\n" + placeholder
+            def_placeholder = True
+        else:
+            # Check if any resource path is in line
+            out = resource_pattern.search(line)
+            if out is not None:
+                path, prefix = None, None
+                # Check if resource path starts with any of the prefixes
+                for prefix in resources.keys():
+                    if out[1].startswith(prefix):
+                        # make file path by removing prefix from it
+                        path = out[1][len(prefix):]
+                        break
+                if path is None or prefix is None:
+                    # Prefix doesn't exist in qrc file, comment out that line
+                    logging.warning(f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file.")
+                    output += "# " + line + "\n"
+                    continue
+
+                # Add prefix resource in format (prefix, resource_rel_path/filepath)
+                prefix_resources.add((prefix[1:-1], "/".join([resource_rel_path, dirname(path)])))
+                # This creates file reference in format prefix:filename
+                f_path = f"{prefix[1:-1]}:{basename(out[1])}"
+                # Replace previous file reference of modified one
+                line = line.replace(out[0], f'"{f_path}"')
+
+        # Append new line into output
+        output += line + "\n"
+    # Generate code which setSearchPath for every prefix:resource
+    # To get absolute dir path, combine current __filename__ dir, resource relative path and normalize it
+    append_path_part = f'{tab * 2}prefix_resources = {list(prefix_resources)}\n' \
+                       f'{tab * 2}for prefix, resource in prefix_resources:\n' \
+                       f'{tab * 3}sp = QDir.searchPaths(prefix)\n' \
+                       f'{tab * 3}QDir.setSearchPaths(prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))]))\n'
+    output = output.replace(placeholder, append_path_part, 1)
     return output
 
 

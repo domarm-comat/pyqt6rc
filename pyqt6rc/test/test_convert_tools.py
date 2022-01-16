@@ -2,7 +2,7 @@ import os.path
 
 import pytest
 
-from pyqt6rc.convert_tools import parse_qrc, ui_to_py, modify_py, get_ui_files, save_py, update_resources
+from pyqt6rc.convert_tools import parse_qrc, ui_to_py, modify_py, get_ui_files, save_py, update_resources, modify_py_sp
 
 
 def test_qrc_parse() -> None:
@@ -27,6 +27,18 @@ def test_conversion(compatible) -> None:
     update_resources("pyqt6rc/test/myPackage/templates/template1.ui", resources)
     convert_ui_to_py = ui_to_py("pyqt6rc/test/myPackage/templates/template1.ui")
     modified_py = modify_py("myPackage", convert_ui_to_py, resources, compatible=compatible)
+
+    with open(f"pyqt6rc/test/myPackage/templates/{reference_file}", "r") as fp:
+        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+
+
+def test_sp_conversion() -> None:
+    reference_file = "template1_sp_reference.py"
+
+    resources = {}
+    resource_rel_path = update_resources("pyqt6rc/test/myPackage/templates/template1.ui", resources)
+    convert_ui_to_py = ui_to_py("pyqt6rc/test/myPackage/templates/template1.ui")
+    modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
 
     with open(f"pyqt6rc/test/myPackage/templates/{reference_file}", "r") as fp:
         assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
