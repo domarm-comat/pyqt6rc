@@ -1,10 +1,10 @@
 <RCC>
-  <qresource prefix="other_images">
-    <file>image2_r2.png</file>
-    <file>image1_r2.png</file>
-  </qresource>
-  <qresource prefix="other_icons">
-    <file>icons/icon2_r2.png</file>
-    <file>icons/icon1_r2.png</file>
-  </qresource>
+    <qresource prefix="other_images">
+        <file>image2_r2.png</file>
+        <file>image1_r2.png</file>
+    </qresource>
+    <qresource prefix="other_icons">
+        <file>icons/icon2_r2.png</file>
+        <file>icons/icon1_r2.png</file>
+    </qresource>
 </RCC>

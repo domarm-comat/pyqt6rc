@@ -69,13 +69,14 @@ def ui_to_py(ui_file: str) -> str:
     return os.popen(f"pyuic6 {ui_file}").read()
 
 
-def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4) -> str:
+def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4, compatible: bool = False) -> str:
     """
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
     :param str package: resource package
     :param str py_input: converted python template
     :param dict resources: collected resources
     :param int tab_size: number of spaces in one tab
+    :param bool compatible: use compatible importlib_resources instead of native importlib
     :return str: modified python template
     """
     output = ""
@@ -85,7 +86,10 @@ def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4) -
     for line in py_input.split("\n"):
         # Check if path was imported
         if not imported and line.startswith("from"):
-            output += "from importlib.resources import path\n"
+            if compatible:
+                output += "from importlib_resources import path\n"
+            else:
+                output += "from importlib.resources import path\n"
             imported = True
         # Check if any resource path is in line
         out = resource_pattern.search(line)

@@ -19,14 +19,17 @@ def test_broken_qrc_parse() -> None:
         parse_qrc("pyqt6rc/test/broken_resources.qrc")
 
 
-def test_conversion() -> None:
+@pytest.mark.parametrize("compatible", [False, True])
+def test_conversion(compatible) -> None:
+    reference_file = "template1_reference_compatible.py" if compatible else "template1_reference.py"
+
     resources = {}
     update_resources("pyqt6rc/test/myPackage/templates/template1.ui", resources)
     convert_ui_to_py = ui_to_py("pyqt6rc/test/myPackage/templates/template1.ui")
-    modified_py = modify_py("myPackage", convert_ui_to_py, resources)
+    modified_py = modify_py("myPackage", convert_ui_to_py, resources, compatible=compatible)
 
-    with open("pyqt6rc/test/myPackage/templates/template1_reference.py", "r") as fp:
-        assert fp.read()[150:] == modified_py[150:]
+    with open(f"pyqt6rc/test/myPackage/templates/{reference_file}", "r") as fp:
+        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
 
 
 def test_get_ui_files():
@@ -46,6 +49,6 @@ def test_save_py():
 
         try:
             with open(f"pyqt6rc/test/{template_name}.py", "r") as fp:
-                assert fp.read()[150:] == modified_py[150:]
+                assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
         finally:
             os.remove(f"pyqt6rc/test/{template_name}.py")

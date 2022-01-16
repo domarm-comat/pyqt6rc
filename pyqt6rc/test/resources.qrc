@@ -1,17 +1,17 @@
 <RCC>
-  <qresource>
-    <file>test.png</file>
-  </qresource>
-  <qresource prefix="icons">
-    <file>arrow-right.png</file>
-    <file>done.png</file>
-    <file>loading.gif</file>
-    <file>reset.png</file>
-  </qresource>
-  <qresource prefix="subdir/icons/">
-    <file>test2.png</file>
-  </qresource>
-  <qresource prefix="subdir/icons_aliased/">
-    <file alias="aliased.png">test.png</file>
-  </qresource>
+    <qresource>
+        <file>test.png</file>
+    </qresource>
+    <qresource prefix="icons">
+        <file>arrow-right.png</file>
+        <file>done.png</file>
+        <file>loading.gif</file>
+        <file>reset.png</file>
+    </qresource>
+    <qresource prefix="subdir/icons/">
+        <file>test2.png</file>
+    </qresource>
+    <qresource prefix="subdir/icons_aliased/">
+        <file alias="aliased.png">test.png</file>
+    </qresource>
 </RCC>

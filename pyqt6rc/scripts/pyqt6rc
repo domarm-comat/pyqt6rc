@@ -4,23 +4,26 @@ import os
 import sys
 
 from pyqt6rc import __version__
-from pyqt6rc.convert_tools import parse_qrc, ui_to_py, modify_py, save_py, get_ui_files, update_resources
+from pyqt6rc.convert_tools import ui_to_py, modify_py, save_py, get_ui_files, update_resources
 from pyqt6rc.script_helpers import set_logger
 
 description = [
     f"pyqt6rc v{__version__}",
-    "PyQt6 UI templates resource converter.",
+    "PyQt6 UI templates - Resource Converter.",
     "Default input location is Current Working Directory.",
     "",
     "Usage examples:",
     "  Convert all .ui files in CWD:",
-    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources",
+    "  pyqt6rc -p myPackage",
+    "",
+    "  Convert all .ui files in CWD using importlib_resources:",
+    "  pyqt6rc -p myPackage -c",
     "",
     "  Convert all .ui files in directory:",
-    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources -i /directory/with/templates",
+    "  pyqt6rc -p myPackage -i /directory/with/templates",
     "",
     "  Convert all .ui files in CWD, save output in different directory:",
-    "  pyqt6rc ./resources/resources.qrc -p myPackage.resources -o /directory/with/converted/templates",
+    "  pyqt6rc -p myPackage -o /directory/with/converted/templates",
     "",
 ]
 
@@ -37,6 +40,8 @@ parser.add_argument("-p", "--package", type=str, help="Name of the resource's pa
 parser.add_argument("-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4)
 parser.add_argument("-o", "--out", type=str, help="Output directory to save converted templates", default=None)
 parser.add_argument("-s", "--silent", help="Supress logging", action="store_true")
+parser.add_argument("-c", "--compatible", help="Use compatible importlib_resources instead of native importlib."
+                                               "Requires importlib_resources.", action="store_true")
 args = parser.parse_args()
 
 # Set logger
@@ -58,5 +63,5 @@ resources = {}
 for input_file in input_files:
     update_resources(input_file, resources)
     py_input = ui_to_py(input_file)
-    py_modified = modify_py(args.package, py_input, resources, args.tab_size)
+    py_modified = modify_py(args.package, py_input, resources, args.tab_size, args.compatible)
     save_py(input_file, py_modified, args.out)
