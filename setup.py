@@ -15,11 +15,11 @@ setuptools.setup(
     url="https://github.com/domarm-comat/pyqt6rc",
     packages=setuptools.find_packages(),
     package_data={
-        'pyqt6rc.scripts': ['*'],
+        'pyqt6rc.scripts': ['pyqt6rc', 'pyqt6sp'],
         'pyqt6rc.test.myPackage': ["*/*"],
         'pyqt6rc.test.myPackage.resources': ["*/*"],
     },
-    scripts=['pyqt6rc/scripts/pyqt6rc'],
+    scripts=['pyqt6rc/scripts/pyqt6rc', 'pyqt6rc/scripts/pyqt6sp'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Operating System :: OS Independent",
