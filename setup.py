@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyqt6rc",
-    version="0.3.0",
+    version="0.3.1",
     license='MIT',
     author="Martin Domaracký",
     author_email="domarm@comat.sk",
@@ -15,7 +15,7 @@ setuptools.setup(
     url="https://github.com/domarm-comat/pyqt6rc",
     packages=setuptools.find_packages(),
     package_data={
-        'pyqt6rc.scripts': ['pyqt6rc', 'pyqt6sp'],
+        'pyqt6rc.scripts': ['*'],
         'pyqt6rc.test.myPackage': ["*/*"],
         'pyqt6rc.test.myPackage.resources': ["*/*"],
     },
