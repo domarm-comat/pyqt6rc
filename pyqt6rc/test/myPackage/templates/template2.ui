@@ -14,6 +14,49 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="2" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap resource="../resources/resources.qrc">:/images/image1.png</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="pushButton_3">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/second_resources.qrc">
+       <normaloff>:/other_images/image1_r2.png</normaloff>:/other_images/image1_r2.png</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string/>
+     </property>
+     <property name="pixmap">
+      <pixmap>:/images_non_existent/image2.png</pixmap>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QPushButton" name="pushButton_4">
+     <property name="text">
+      <string>PushButton</string>
+     </property>
+     <property name="icon">
+      <iconset resource="../resources/second_resources.qrc">
+       <normaloff>:/other_icons/icons/icon2_r2.png</normaloff>
+       <normalon>:/icons/icons/icon1.png</normalon>:/other_icons/icons/icon2_r2.png</iconset>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButton">
      <property name="text">
@@ -36,23 +79,23 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="text">
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/resources.qrc">:/images/image1.png</pixmap>
+      <pixmap resource="../resources/second_resources.qrc">:/other_images/image1_r2.png</pixmap>
      </property>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QLabel" name="label_2">
+   <item row="3" column="1">
+    <widget class="QLabel" name="label_4">
      <property name="text">
       <string/>
      </property>
      <property name="pixmap">
-      <pixmap resource="../resources/resources.qrc">:/images_non_existent/image2.png</pixmap>
+      <pixmap resource="../resources/second_resources.qrc">:/other_images/image2_r2.png</pixmap>
      </property>
     </widget>
    </item>
@@ -60,6 +103,7 @@
  </widget>
  <resources>
   <include location="../resources/resources.qrc"/>
+  <include location="../resources/second_resources.qrc"/>
  </resources>
  <connections/>
 </ui>

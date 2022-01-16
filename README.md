@@ -55,15 +55,15 @@ myPackage
 
 Convert all .ui files located in templates directory
 ```shell
-pyqt6rc /myPackage/resources/resources.qrc -p myPackage.resources -i /myPackage/templates
+pyqt6rc /myPackage/templates -p myPackage
 ```
 
 Convert template1.ui
 ```shell
-pyqt6rc /myPackage/resources/resources.qrc -p myPackage.resources -i /myPackage/templates/template1.ui
+pyqt6rc /myPackage/templates/template1.ui -p myPackage
 ```
 
 Convert template1.ui and save it in /tmp directory
 ```shell
-pyqt6rc /myPackage/resources/resources.qrc -p myPackage.resources -i /myPackage/templates/template1.ui -o /tmp
+pyqt6rc /myPackage/templates/template1.ui -p myPackage -o /tmp
 ```

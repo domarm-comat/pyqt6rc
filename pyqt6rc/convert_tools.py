@@ -2,7 +2,7 @@ import logging
 import os
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pyqt6rc import resource_pattern, indent_pattern
 
@@ -30,8 +30,34 @@ def parse_qrc(qrc_file: str) -> dict:
             prefix = "/" + child.attrib.get("prefix", "")
             if not prefix.endswith("/"):
                 prefix += "/"
-            resources[prefix] = aliases
+            resources[prefix] = {
+                "package": os.path.basename(os.path.dirname(qrc_file)),
+                "aliases": aliases
+            }
     return resources
+
+
+def update_resources(ui_file: str, resources: Dict) -> None:
+    """
+    Read ui file and collect all input resource files.
+    :param str ui_file: input ui template
+    :param dict resources: input parsed resources
+    :return:
+    """
+    tree = Et.parse(ui_file)
+    root = tree.getroot()
+
+    if root.tag != "ui":
+        raise Exception(f"Invalid template file format.")
+
+    ui_dir = os.path.dirname(ui_file)
+    for child in root:
+        if child.tag == "resources":
+            for include in child:
+                location = include.attrib.get("location", None)
+                if location is not None:
+                    resource_location = os.path.normpath(os.path.join(ui_dir, location))
+                    resources.update(parse_qrc(resource_location))
 
 
 def ui_to_py(ui_file: str) -> str:
@@ -43,12 +69,12 @@ def ui_to_py(ui_file: str) -> str:
     return os.popen(f"pyuic6 {ui_file}").read()
 
 
-def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
+def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4) -> str:
     """
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
     :param str package: resource package
     :param str py_input: converted python template
-    :param dict qrc: parsed qrc
+    :param dict resources: collected resources
     :param int tab_size: number of spaces in one tab
     :return str: modified python template
     """
@@ -65,11 +91,12 @@ def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
         out = resource_pattern.search(line)
         if out is not None:
             tabs = indent_pattern.search(line)
-            path = None
+            sub_package, path = None, None
             # Check if resource path starts with any of the prefixes
-            for prefix in qrc.keys():
+            for prefix in resources.keys():
                 if out[1].startswith(prefix):
                     # make file path by removing prefix from it
+                    sub_package = resources[prefix]["package"]
                     path = out[1][len(prefix):]
                     break
             if path is None:
@@ -81,7 +108,7 @@ def modify_py(package: str, py_input: str, qrc: dict, tab_size: int = 4) -> str:
             # Split file path into parts
             path_parts = list(filter(None, dirname(path).split("/")))
             # Make final resource_package name
-            resource_package = ".".join([package] + path_parts)
+            resource_package = ".".join([package, sub_package] + path_parts)
             # Get file name
             f_name = basename(out[1])
             output += f"{tabs[0]}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
