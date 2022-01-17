@@ -44,9 +44,22 @@ def test_sp_conversion() -> None:
         assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
 
 
+def test_sp_conversion_no_resources() -> None:
+    reference_file = "template3_reference.py"
+
+    resources = {}
+    resource_rel_path = update_resources("pyqt6rc/test/myPackage/templates/template3.ui", resources)
+    convert_ui_to_py = ui_to_py("pyqt6rc/test/myPackage/templates/template3.ui")
+    modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
+
+    with open(f"pyqt6rc/test/myPackage/templates/{reference_file}", "r") as fp:
+        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+
+
 def test_get_ui_files():
     ui_files = get_ui_files("pyqt6rc/test/myPackage/templates")
-    assert ui_files == ['pyqt6rc/test/myPackage/templates/template2.ui',
+    assert ui_files == ['pyqt6rc/test/myPackage/templates/template3.ui',
+                        'pyqt6rc/test/myPackage/templates/template2.ui',
                         'pyqt6rc/test/myPackage/templates/template1.ui']
 
 

@@ -67,5 +67,5 @@ for input_file in input_files:
     resources = {}
     resource_rel_path = update_resources(input_file, resources)
     py_input = ui_to_py(input_file)
-    py_modified = modify_py_sp(py_input, resources,  resource_rel_path, args.tab_size)
-    save_py(input_file, py_modified, args.out)
+    py_input = modify_py_sp(py_input, resources,  resource_rel_path, args.tab_size)
+    save_py(input_file, py_input, args.out)

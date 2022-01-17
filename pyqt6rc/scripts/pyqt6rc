@@ -61,7 +61,9 @@ else:
 
 resources = {}
 for input_file in input_files:
-    update_resources(input_file, resources)
+    resources_found = update_resources(input_file, resources)
     py_input = ui_to_py(input_file)
-    py_modified = modify_py(args.package, py_input, resources, args.tab_size, args.compatible)
-    save_py(input_file, py_modified, args.out)
+    # Skip conversion if no resource were found in input template file
+    if resources_found is not None:
+        py_input = modify_py(args.package, py_input, resources, args.tab_size, args.compatible)
+    save_py(input_file, py_input, args.out)

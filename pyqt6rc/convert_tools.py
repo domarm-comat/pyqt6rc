@@ -37,7 +37,7 @@ def parse_qrc(qrc_file: str) -> dict:
     return resources
 
 
-def update_resources(ui_file: str, resources: Dict) -> str:
+def update_resources(ui_file: str, resources: Dict) -> Optional[str]:
     """
     Read ui file and collect all input resource files.
     :param str ui_file: input ui template
@@ -59,7 +59,7 @@ def update_resources(ui_file: str, resources: Dict) -> str:
                 if location is not None:
                     resource_location = os.path.normpath(os.path.join(ui_dir, location))
                     resources.update(parse_qrc(resource_location))
-    return dirname(location)
+    return dirname(location) if location is not None else None
 
 
 def ui_to_py(ui_file: str) -> str:
@@ -130,6 +130,7 @@ def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_siz
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
     :param str py_input: converted python template
     :param dict resources: collected resources
+    :param str resource_rel_path: Relative path to the resource
     :param int tab_size: number of spaces in one tab
     :return str: modified python template
     """
@@ -139,7 +140,8 @@ def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_siz
     tab = " " * tab_size
     prefix_resources = set()
     placeholder = f"#{tab}__PLACEHOLDER__"
-
+    if not resources:
+        return py_input
     for index, line in enumerate(py_input.split("\n")):
         # Check if path was imported
         if not imported and line.startswith("from"):
