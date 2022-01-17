@@ -58,9 +58,9 @@ def test_sp_conversion_no_resources() -> None:
 
 def test_get_ui_files():
     ui_files = get_ui_files("pyqt6rc/test/myPackage/templates")
-    assert ui_files == ['pyqt6rc/test/myPackage/templates/template3.ui',
-                        'pyqt6rc/test/myPackage/templates/template2.ui',
-                        'pyqt6rc/test/myPackage/templates/template1.ui']
+    assert 'pyqt6rc/test/myPackage/templates/template3.ui' in ui_files
+    assert 'pyqt6rc/test/myPackage/templates/template2.ui' in ui_files
+    assert 'pyqt6rc/test/myPackage/templates/template1.ui' in ui_files
 
 
 def test_save_py():
