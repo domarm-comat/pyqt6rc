@@ -7,11 +7,11 @@ from pyqt6rc.convert_tools import parse_qrc, ui_to_py, modify_py, get_ui_files, 
 
 def test_qrc_parse() -> None:
     parsed_qrc = parse_qrc("pyqt6rc/test/test_resources/resources.qrc")
-    assert parsed_qrc == {'/': {'aliases': {}, 'package': ''},
-                          '/icons/': {'aliases': {}, 'package': ''},
-                          '/subdir/icons/': {'aliases': {}, 'package': ''},
+    assert parsed_qrc == {'/': {'aliases': {}, 'module_path': ''},
+                          '/icons/': {'aliases': {}, 'module_path': ''},
+                          '/subdir/icons/': {'aliases': {}, 'module_path': ''},
                           '/subdir/icons_aliased/': {'aliases': {'test.png': 'aliased.png'},
-                                                     'package': ''}}
+                                                     'module_path': ''}}
 
 
 def test_broken_qrc_parse() -> None:

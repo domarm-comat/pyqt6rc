@@ -1,5 +1,3 @@
-import importlib
-from importlib.util import spec_from_file_location, module_from_spec
 import logging
 import os
 import xml.etree.ElementTree as Et
@@ -9,7 +7,13 @@ from typing import List, Optional, Dict
 from pyqt6rc import resource_pattern, indent_pattern
 
 
-def get_top_package(input_dir: str) -> str:
+def get_module_path(input_dir: str) -> str:
+    """
+    Get module path by crawling parent folders and looking for __init__.py file.
+    Last folder having __init__.py is top-level package name.
+    :param str input_dir: input directory
+    :return: module path
+    """
     package_parts = []
     while True:
         try:
@@ -50,7 +54,7 @@ def parse_qrc(qrc_file: str) -> dict:
                 prefix += "/"
 
             resources[prefix] = {
-                "package": get_top_package(os.path.dirname(qrc_file)),
+                "module_path": get_module_path(os.path.dirname(qrc_file)),
                 "aliases": aliases
             }
     return resources
@@ -120,7 +124,7 @@ def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: boo
             for prefix in resources.keys():
                 if out[1].startswith(prefix):
                     # make file path by removing prefix from it
-                    package = resources[prefix]["package"]
+                    package = resources[prefix]["module_path"]
                     path = out[1][len(prefix):]
                     break
             if path is None:
@@ -238,7 +242,7 @@ def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> No
 def get_ui_files(input_dir: str) -> List[str]:
     """
     Get all .ui template files in input directory
-    :param str input_dir:input directory
+    :param str input_dir: input directory
     :return list: list of .ui files
     """
     files = []
