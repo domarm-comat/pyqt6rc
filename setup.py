@@ -16,8 +16,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     package_data={
         'pyqt6rc.scripts': ['pyqt6rc', 'pyqt6sp'],
-        'pyqt6rc.test.myPackage': ["*/*"],
-        'pyqt6rc.test.myPackage.resources': ["*/*"],
+        'pyqt6rc.test': ["*/*", "test_resources/myPackage/*", "test_resources/myPackage/*/*",
+                         "test_resources/myPackage/*/*/*"],
     },
     scripts=['pyqt6rc/scripts/pyqt6rc', 'pyqt6rc/scripts/pyqt6sp'],
     classifiers=[

@@ -8,22 +8,27 @@ In current PyQt6 implementation, files created by pyuic6 scripts using Qt resour
 This script is converting .ui files into .py files and using importlib to fix resource path.
 
 There are three major solutions to this problem, all covered by this package:
-* Native python3.7+ solution using [importlib](https://docs.python.org/3/library/importlib.html#module-importlib.resources) [**Use pyqt6rc**].
-* Use of [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), for compatibility with Python3.6+ [**Use pyqt6rc with -c option**]
+
+* Native python3.7+ solution
+  using [importlib](https://docs.python.org/3/library/importlib.html#module-importlib.resources) [**Use pyqt6rc**].
+* Use of [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), for compatibility with
+  Python3.6+ [**Use pyqt6rc with -c option**]
 * Adding resource search path using QtCore.QDir.addSearchPath() and modifying generated prefixes [**Use pyqt6sp**]
 
-In version 4.0, parameter -p, --package was removed.
-Pyqt6rc now determines package name automatically by crawling parent folders and looking for \_\_init\_\_.py file.
+In version 4.0, parameter -p, --package was removed. Pyqt6rc now determines package name automatically by crawling
+parent folders and looking for \_\_init\_\_.py file.
 
 # Conversion #
 
 Generated template using pyuic6:
+
 ```python
 icon = QtGui.QIcon()
 icon.addPixmap(QtGui.QPixmap(":/icons/icon1.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 ```
 
 Generated template using pyqt6rc:
+
 ```python
 from importlib.resources import path
 
@@ -33,6 +38,7 @@ with path("myPackage.resources.icons", "icon1.png") as f_path:
 ```
 
 Generated template using pyqt6rc (-c, --compatible):
+
 ```python
 from importlib_resources import path
 
@@ -42,6 +48,7 @@ with path("myPackage.resources.icons", "icon1.png") as f_path:
 ```
 
 Generated template using pyqt6sp:
+
 ```python
 import os
 from os.path import dirname, normpath
@@ -59,6 +66,7 @@ icon.addPixmap(QtGui.QPixmap("icons:icon1.png"), QtGui.QIcon.Mode.Normal, QtGui.
 # Usage examples #
 
 Package structure example
+
 ```
 myPackage
 │   __init__.py    
@@ -82,26 +90,31 @@ myPackage
 ```
 
 Convert all .ui files located in templates directory
+
 ```shell
 pyqt6rc /myPackage/templates
 ```
 
 Convert template1.ui
+
 ```shell
 pyqt6rc /myPackage/templates/template1.ui
 ```
 
 Convert template1.ui and save it in /tmp directory
+
 ```shell
 pyqt6rc /myPackage/templates/template1.ui -o /tmp
 ```
 
 Convert all .ui files located in templates directory using importlib_resources
+
 ```shell
 pyqt6rc /myPackage/templates -c
 ```
 
 Convert all .ui files located in templates directory using setSearchPaths method
+
 ```shell
 pyqt6sp /myPackage/templates
 ```
