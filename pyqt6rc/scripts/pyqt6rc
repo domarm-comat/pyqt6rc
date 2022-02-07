@@ -36,7 +36,6 @@ parser.add_argument("input", type=str,
                     help="Path to .ui template file or Directory containing .ui files."
                          "If empty, scan current working directory and use all .ui template files.",
                     default="*", nargs="?")
-parser.add_argument("-p", "--package", type=str, help="Name of the resource's parent package.", required=True)
 parser.add_argument("-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4)
 parser.add_argument("-o", "--out", type=str, help="Output directory to save converted templates", default=None)
 parser.add_argument("-s", "--silent", help="Supress logging", action="store_true")
@@ -65,5 +64,5 @@ for input_file in input_files:
     py_input = ui_to_py(input_file)
     # Skip conversion if no resource were found in input template file
     if resources_found is not None:
-        py_input = modify_py(args.package, py_input, resources, args.tab_size, args.compatible)
+        py_input = modify_py(py_input, resources, args.tab_size, args.compatible)
     save_py(input_file, py_input, args.out)

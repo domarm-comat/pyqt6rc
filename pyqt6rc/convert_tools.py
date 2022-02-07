@@ -1,3 +1,5 @@
+import importlib
+from importlib.util import spec_from_file_location, module_from_spec
 import logging
 import os
 import xml.etree.ElementTree as Et
@@ -5,6 +7,19 @@ from os.path import dirname, basename
 from typing import List, Optional, Dict
 
 from pyqt6rc import resource_pattern, indent_pattern
+
+
+def get_top_package(input_dir: str) -> str:
+    package_parts = []
+    while True:
+        for entry in os.scandir(input_dir):
+            if entry.name == "__init__.py":
+                package_parts.insert(0, os.path.basename(input_dir))
+                input_dir = os.path.dirname(input_dir)
+                break
+        else:
+            break
+    return ".".join(package_parts)
 
 
 def parse_qrc(qrc_file: str) -> dict:
@@ -30,8 +45,9 @@ def parse_qrc(qrc_file: str) -> dict:
             prefix = "/" + child.attrib.get("prefix", "")
             if not prefix.endswith("/"):
                 prefix += "/"
+
             resources[prefix] = {
-                "package": os.path.basename(os.path.dirname(qrc_file)),
+                "package": get_top_package(os.path.dirname(qrc_file)),
                 "aliases": aliases
             }
     return resources
@@ -71,10 +87,9 @@ def ui_to_py(ui_file: str) -> str:
     return os.popen(f"pyuic6 {ui_file}").read()
 
 
-def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4, compatible: bool = False) -> str:
+def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: bool = False) -> str:
     """
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
-    :param str package: resource package
     :param str py_input: converted python template
     :param dict resources: collected resources
     :param int tab_size: number of spaces in one tab
@@ -97,12 +112,12 @@ def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4, c
         out = resource_pattern.search(line)
         if out is not None:
             tabs = indent_pattern.search(line)
-            sub_package, path = None, None
+            package, path = None, None
             # Check if resource path starts with any of the prefixes
             for prefix in resources.keys():
                 if out[1].startswith(prefix):
                     # make file path by removing prefix from it
-                    sub_package = resources[prefix]["package"]
+                    package = resources[prefix]["package"]
                     path = out[1][len(prefix):]
                     break
             if path is None:
@@ -114,7 +129,7 @@ def modify_py(package: str, py_input: str, resources: dict, tab_size: int = 4, c
             # Split file path into parts
             path_parts = list(filter(None, dirname(path).split("/")))
             # Make final resource_package name
-            resource_package = ".".join([package, sub_package] + path_parts)
+            resource_package = ".".join([package] + path_parts)
             # Get file name
             f_name = basename(out[1])
             output += f"{tabs[0]}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"

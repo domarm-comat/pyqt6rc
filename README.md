@@ -38,7 +38,7 @@ with path("myPackage.resources.icons", "icon1.png") as f_path:
     icon.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
 ```
 
-Generated template using pyqt6sc:
+Generated template using pyqt6sp:
 ```python
 import os
 from os.path import dirname, normpath
