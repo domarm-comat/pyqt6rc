@@ -12,12 +12,15 @@ from pyqt6rc import resource_pattern, indent_pattern
 def get_top_package(input_dir: str) -> str:
     package_parts = []
     while True:
-        for entry in os.scandir(input_dir):
-            if entry.name == "__init__.py":
-                package_parts.insert(0, os.path.basename(input_dir))
-                input_dir = os.path.dirname(input_dir)
+        try:
+            for entry in os.scandir(input_dir):
+                if entry.name == "__init__.py":
+                    package_parts.insert(0, os.path.basename(input_dir))
+                    input_dir = os.path.dirname(input_dir)
+                    break
+            else:
                 break
-        else:
+        except FileNotFoundError:
             break
     return ".".join(package_parts)
 

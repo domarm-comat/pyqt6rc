@@ -12,6 +12,9 @@ There are three major solutions to this problem, all covered by this package:
 * Use of [importlib_resources](https://importlib-resources.readthedocs.io/en/latest/), for compatibility with Python3.6+ [**Use pyqt6rc with -c option**]
 * Adding resource search path using QtCore.QDir.addSearchPath() and modifying generated prefixes [**Use pyqt6sp**]
 
+In version 4.0, parameter -p, --package was removed.
+Pyqt6rc now determines package name automatically by crawling parent folders and looking for \_\_init\_\_.py file.
+
 # Conversion #
 
 Generated template using pyuic6:
@@ -80,22 +83,22 @@ myPackage
 
 Convert all .ui files located in templates directory
 ```shell
-pyqt6rc /myPackage/templates -p myPackage
+pyqt6rc /myPackage/templates
 ```
 
 Convert template1.ui
 ```shell
-pyqt6rc /myPackage/templates/template1.ui -p myPackage
+pyqt6rc /myPackage/templates/template1.ui
 ```
 
 Convert template1.ui and save it in /tmp directory
 ```shell
-pyqt6rc /myPackage/templates/template1.ui -p myPackage -o /tmp
+pyqt6rc /myPackage/templates/template1.ui -o /tmp
 ```
 
 Convert all .ui files located in templates directory using importlib_resources
 ```shell
-pyqt6rc /myPackage/templates -p myPackage -c
+pyqt6rc /myPackage/templates -c
 ```
 
 Convert all .ui files located in templates directory using setSearchPaths method
