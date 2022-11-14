@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="pyqt6rc",
-    version="0.5.1",
+    version="0.5.2",
     license='MIT',
     author="Martin Domaracký",
     author_email="domarm@comat.sk",
@@ -32,5 +32,5 @@ setuptools.setup(
         "pyqt6",
         "importlib_resources"
     ],
-    python_requires='>=3.7, <3.10',
+    python_requires='>=3.7',
 )
