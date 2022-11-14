@@ -1,5 +1,2 @@
 pyqt6
-pyqt6-tools
-coverage
-pytest
 importlib_resources

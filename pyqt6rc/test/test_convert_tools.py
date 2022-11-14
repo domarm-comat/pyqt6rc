@@ -29,7 +29,7 @@ def test_conversion(compatible) -> None:
     modified_py = modify_py(convert_ui_to_py, resources, compatible=compatible)
 
     with open(f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r") as fp:
-        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+        assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
 
 def test_sp_conversion() -> None:
@@ -41,7 +41,7 @@ def test_sp_conversion() -> None:
     modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
 
     with open(f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r") as fp:
-        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+        assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
 
 def test_sp_conversion_no_resources() -> None:
@@ -53,7 +53,7 @@ def test_sp_conversion_no_resources() -> None:
     modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
 
     with open(f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r") as fp:
-        assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+        assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
 
 def test_get_ui_files():
@@ -74,6 +74,6 @@ def test_save_py():
 
         try:
             with open(f"pyqt6rc/test/{template_name}.py", "r") as fp:
-                assert fp.read().split("\n", 6)[2] == modified_py.split("\n", 6)[2]
+                assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
         finally:
             os.remove(f"pyqt6rc/test/{template_name}.py")
