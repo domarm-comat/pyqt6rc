@@ -14,7 +14,7 @@ classifiers = [
     "Topic :: Software Development :: Libraries",
     "License :: OSI Approved :: MIT License",
     "Natural Language :: English",
-    "Intended Audience :: PyQt6 developers",
+    "Intended Audience :: Developers",
 ]
 
 [tool.poetry.dependencies]
