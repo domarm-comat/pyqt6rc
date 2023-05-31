@@ -1,38 +1,30 @@
-#!/usr/bin/env python3
 import argparse
 import os
 import sys
 
 from pyqt6rc import __version__
-from pyqt6rc.convert_tools import ui_to_py, save_py, get_ui_files, update_resources, modify_py_sp
+from pyqt6rc.convert_tools import ui_to_py, modify_py, save_py, get_ui_files, update_resources
 from pyqt6rc.script_helpers import set_logger
 
 description = [
     f"pyqt6rc v{__version__}",
-    "PyQt6 UI templates - Set search Paths.",
+    "PyQt6 UI templates - Resource Converter.",
     "Default input location is Current Working Directory.",
     "",
     "Usage examples:",
     "  Convert all .ui files in CWD:",
-    "  pyqt6sp",
+    "  pyqt6rc",
+    "",
+    "  Convert all .ui files in CWD using importlib_resources:",
+    "  pyqt6rc -c",
     "",
     "  Convert all .ui files in directory:",
-    "  pyqt6sp -i /directory/with/templates",
+    "  pyqt6rc -i /directory/with/templates",
     "",
     "  Convert all .ui files in CWD, save output in different directory:",
-    "  pyqt6sp -o /directory/with/converted/templates",
+    "  pyqt6rc -o /directory/with/converted/templates",
     "",
 ]
-
-"""
-from os.path import basename, dirname, normpath
-from PyQt6.QtCore import QDir
-
-prefix_resources = [("icons", "../resources")]
-for prefix, resource in prefix_resources:
-    sp = QDir.searchPaths(prefix)
-    QDir.setSearchPaths(prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))]))
-"""
 
 arguments = sys.argv
 parser = argparse.ArgumentParser(
@@ -46,6 +38,8 @@ parser.add_argument("input", type=str,
 parser.add_argument("-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4)
 parser.add_argument("-o", "--out", type=str, help="Output directory to save converted templates", default=None)
 parser.add_argument("-s", "--silent", help="Supress logging", action="store_true")
+parser.add_argument("-c", "--compatible", help="Use compatible importlib_resources instead of native importlib."
+                                               "Requires importlib_resources.", action="store_true")
 args = parser.parse_args()
 
 # Set logger
@@ -63,9 +57,12 @@ else:
         raise Exception(f"Template file {args.input} does not exists.")
     input_files = [args.input]
 
-for input_file in input_files:
+def run():
     resources = {}
-    resource_rel_path = update_resources(input_file, resources)
-    py_input = ui_to_py(input_file)
-    py_input = modify_py_sp(py_input, resources, resource_rel_path, args.tab_size)
-    save_py(input_file, py_input, args.out)
+    for input_file in input_files:
+        resources_found = update_resources(input_file, resources)
+        py_input = ui_to_py(input_file)
+        # Skip conversion if no resource were found in input template file
+        if resources_found is not None:
+            py_input = modify_py(py_input, resources, args.tab_size, args.compatible)
+        save_py(input_file, py_input, args.out)
