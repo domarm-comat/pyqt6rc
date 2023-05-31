@@ -14,7 +14,7 @@ def get_module_path(input_dir: str) -> str:
     :param str input_dir: input directory
     :return: module path
     """
-    package_parts = []
+    package_parts: List[str] = []
     while True:
         try:
             for entry in os.scandir(input_dir):
@@ -124,7 +124,7 @@ def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: boo
             for prefix in resources.keys():
                 if out[1].startswith(prefix):
                     # make file path by removing prefix from it
-                    package = resources[prefix]["module_path"]
+                    package = resources[prefix].get("module_path")
                     path = out[1][len(prefix):]
                     break
             if path is None:
@@ -132,14 +132,18 @@ def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: boo
                 logging.warning(f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file.")
                 output += "# " + line + "\n"
                 continue
+            if package is None:
+                raise Exception("Package name is empty")
 
             # Split file path into parts
             path_parts = list(filter(None, dirname(path).split("/")))
             # Make final resource_package name
             resource_package = ".".join([package] + path_parts)
+
             # Get file name
             f_name = basename(out[1])
-            output += f"{tabs[0]}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
+            tabs_offset = tabs[0] if tabs is not None else ""
+            output += f"{tabs_offset}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
             line = tab + line.replace(out[0], f"str(f_path)")
 
         # Append new line into output
