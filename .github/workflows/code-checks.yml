@@ -39,7 +39,7 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=120 --statistics
     - name: Test with mypy
       run: |
-        mypy -p fastframe --strict
+        mypy -p pyqt6rc --strict
     - name: Test with pytest
       run: |
         pytest
