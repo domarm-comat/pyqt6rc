@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file '/home/domarm/PycharmProjects/pyqt6rc/pyqt6rc/test/myPackage/templates/template1.ui'
+# Form implementation generated from reading ui file 'template1.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #
@@ -19,14 +19,22 @@ class Ui_Form(object):
         self.pushButton = QtWidgets.QPushButton(Form)
         icon = QtGui.QIcon()
         with path("crawlMpGui.resources.icons", "icon1.png") as f_path:
-            icon.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         self.pushButton.setIcon(icon)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(Form)
         icon1 = QtGui.QIcon()
         with path("crawlMpGui.resources.icons", "icon2.png") as f_path:
-            icon1.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon1.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         self.pushButton_2.setIcon(icon1)
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 1, 0, 1, 1)
