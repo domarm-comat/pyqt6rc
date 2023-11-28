@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file '/home/domarm/PycharmProjects/pyqt6rc/pyqt6rc/test/myPackage/templates/template1.ui'
+# Form implementation generated from reading ui file 'template1.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #
@@ -15,10 +15,15 @@ from PyQt6.QtCore import QDir
 
 class Ui_Form(object):
     def setupUi(self, Form):
-        prefix_resources = [('icons', '../resources/icons'), ('images', '../resources/')]
+        prefix_resources = [
+            ("icons", "../resources/icons"),
+            ("images", "../resources/"),
+        ]
         for prefix, resource in prefix_resources:
             sp = QDir.searchPaths(prefix)
-            QDir.setSearchPaths(prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))]))
+            QDir.setSearchPaths(
+                prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))])
+            )
 
         Form.setObjectName("Form")
         Form.resize(292, 208)
@@ -26,13 +31,21 @@ class Ui_Form(object):
         self.gridLayout.setObjectName("gridLayout")
         self.pushButton = QtWidgets.QPushButton(Form)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("icons:icon1.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon.addPixmap(
+            QtGui.QPixmap("icons:icon1.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton.setIcon(icon)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(Form)
         icon1 = QtGui.QIcon()
-        icon1.addPixmap(QtGui.QPixmap("icons:icon2.png"), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+        icon1.addPixmap(
+            QtGui.QPixmap("icons:icon2.png"),
+            QtGui.QIcon.Mode.Normal,
+            QtGui.QIcon.State.Off,
+        )
         self.pushButton_2.setIcon(icon1)
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 1, 0, 1, 1)

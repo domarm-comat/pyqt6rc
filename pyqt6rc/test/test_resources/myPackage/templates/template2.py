@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file '/home/domarm/PycharmProjects/pyqt6rc/pyqt6rc/test/myPackage/templates/template2.ui'
+# Form implementation generated from reading ui file 'template2.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #
@@ -25,7 +25,11 @@ class Ui_Form(object):
         self.pushButton_3 = QtWidgets.QPushButton(Form)
         icon = QtGui.QIcon()
         with path("crawlMpGui.resources", "image1_r2.png") as f_path:
-            icon.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         self.pushButton_3.setIcon(icon)
         self.pushButton_3.setObjectName("pushButton_3")
         self.gridLayout.addWidget(self.pushButton_3, 0, 1, 1, 1)
@@ -37,23 +41,39 @@ class Ui_Form(object):
         self.pushButton_4 = QtWidgets.QPushButton(Form)
         icon1 = QtGui.QIcon()
         with path("crawlMpGui.resources.icons", "icon2_r2.png") as f_path:
-            icon1.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon1.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         with path("crawlMpGui.resources.icons", "icon1.png") as f_path:
-            icon1.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.On)
+            icon1.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.On,
+            )
         self.pushButton_4.setIcon(icon1)
         self.pushButton_4.setObjectName("pushButton_4")
         self.gridLayout.addWidget(self.pushButton_4, 1, 1, 1, 1)
         self.pushButton = QtWidgets.QPushButton(Form)
         icon2 = QtGui.QIcon()
         with path("crawlMpGui.resources.icons", "icon1.png") as f_path:
-            icon2.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon2.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         self.pushButton.setIcon(icon2)
         self.pushButton.setObjectName("pushButton")
         self.gridLayout.addWidget(self.pushButton, 0, 0, 1, 1)
         self.pushButton_2 = QtWidgets.QPushButton(Form)
         icon3 = QtGui.QIcon()
         with path("crawlMpGui.resources.icons", "icon2.png") as f_path:
-            icon3.addPixmap(QtGui.QPixmap(str(f_path)), QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
+            icon3.addPixmap(
+                QtGui.QPixmap(str(f_path)),
+                QtGui.QIcon.Mode.Normal,
+                QtGui.QIcon.State.Off,
+            )
         self.pushButton_2.setIcon(icon3)
         self.pushButton_2.setObjectName("pushButton_2")
         self.gridLayout.addWidget(self.pushButton_2, 1, 0, 1, 1)

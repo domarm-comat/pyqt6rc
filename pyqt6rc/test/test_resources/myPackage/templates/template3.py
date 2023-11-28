@@ -1,4 +1,4 @@
-# Form implementation generated from reading ui file '/home/domarm/PycharmProjects/pyqt6rc/pyqt6rc/test/myPackage/templates/template3.ui'
+# Form implementation generated from reading ui file 'template3.ui'
 #
 # Created by: PyQt6 UI code generator 6.1.0
 #

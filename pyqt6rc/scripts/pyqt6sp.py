@@ -1,9 +1,16 @@
 import argparse
 import os
 import sys
+from typing import Any, Dict
 
 from pyqt6rc import __version__
-from pyqt6rc.convert_tools import ui_to_py, save_py, get_ui_files, update_resources, modify_py_sp
+from pyqt6rc.convert_tools import (
+    ui_to_py,
+    save_py,
+    get_ui_files,
+    update_resources,
+    modify_py_sp,
+)
 from pyqt6rc.script_helpers import set_logger
 
 description = [
@@ -35,15 +42,26 @@ for prefix, resource in prefix_resources:
 
 arguments = sys.argv
 parser = argparse.ArgumentParser(
-    formatter_class=argparse.RawTextHelpFormatter,
-    description="\r\n".join(description)
+    formatter_class=argparse.RawTextHelpFormatter, description="\r\n".join(description)
 )
-parser.add_argument("input", type=str,
-                    help="Path to .ui template file or Directory containing .ui files."
-                         "If empty, scan current working directory and use all .ui template files.",
-                    default="*", nargs="?")
-parser.add_argument("-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4)
-parser.add_argument("-o", "--out", type=str, help="Output directory to save converted templates", default=None)
+parser.add_argument(
+    "input",
+    type=str,
+    help="Path to .ui template file or Directory containing .ui files."
+    "If empty, scan current working directory and use all .ui template files.",
+    default="*",
+    nargs="?",
+)
+parser.add_argument(
+    "-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4
+)
+parser.add_argument(
+    "-o",
+    "--out",
+    type=str,
+    help="Output directory to save converted templates",
+    default=None,
+)
 parser.add_argument("-s", "--silent", help="Supress logging", action="store_true")
 args = parser.parse_args()
 
@@ -62,9 +80,10 @@ else:
         raise Exception(f"Template file {args.input} does not exists.")
     input_files = [args.input]
 
-def run():
+
+def run() -> None:
     for input_file in input_files:
-        resources = {}
+        resources: Dict[str, Any] = {}
         resource_rel_path = update_resources(input_file, resources)
         py_input = ui_to_py(input_file)
         py_input = modify_py_sp(py_input, resources, resource_rel_path, args.tab_size)

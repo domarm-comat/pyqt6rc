@@ -2,8 +2,7 @@ import logging
 import os
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
-from typing import List, Optional, Dict
-
+from typing import List, Optional, Dict, Any
 from pyqt6rc import resource_pattern, indent_pattern
 
 
@@ -29,7 +28,7 @@ def get_module_path(input_dir: str) -> str:
     return ".".join(package_parts)
 
 
-def parse_qrc(qrc_file: str) -> dict:
+def parse_qrc(qrc_file: str) -> Dict[str, Any]:
     """
     Parse qrc xml file and extract prefixes and aliases.
     :param str qrc_file: path to qrc_file
@@ -39,7 +38,7 @@ def parse_qrc(qrc_file: str) -> dict:
     root = tree.getroot()
 
     if root.tag != "RCC":
-        raise Exception(f"Invalid Resource file format.")
+        raise Exception("Invalid Resource file format.")
 
     resources = {}
     for child in root:
@@ -55,12 +54,12 @@ def parse_qrc(qrc_file: str) -> dict:
 
             resources[prefix] = {
                 "module_path": get_module_path(os.path.dirname(qrc_file)),
-                "aliases": aliases
+                "aliases": aliases,
             }
     return resources
 
 
-def update_resources(ui_file: str, resources: Dict) -> Optional[str]:
+def update_resources(ui_file: str, resources: Dict[str, Any]) -> str:
     """
     Read ui file and collect all input resource files.
     :param str ui_file: input ui template
@@ -71,7 +70,7 @@ def update_resources(ui_file: str, resources: Dict) -> Optional[str]:
     root = tree.getroot()
 
     if root.tag != "ui":
-        raise Exception(f"Invalid template file format.")
+        raise Exception("Invalid template file format.")
 
     ui_dir = os.path.dirname(ui_file)
     location = None
@@ -82,7 +81,7 @@ def update_resources(ui_file: str, resources: Dict) -> Optional[str]:
                 if location is not None:
                     resource_location = os.path.normpath(os.path.join(ui_dir, location))
                     resources.update(parse_qrc(resource_location))
-    return dirname(location) if location is not None else None
+    return dirname(location) if location is not None else ""
 
 
 def ui_to_py(ui_file: str) -> str:
@@ -94,7 +93,12 @@ def ui_to_py(ui_file: str) -> str:
     return os.popen(f"pyuic6 {ui_file}").read()
 
 
-def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: bool = False) -> str:
+def modify_py(
+    py_input: str,
+    resources: Dict[str, Any],
+    tab_size: int = 4,
+    compatible: bool = False,
+) -> str:
     """
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
     :param str py_input: converted python template
@@ -125,11 +129,14 @@ def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: boo
                 if out[1].startswith(prefix):
                     # make file path by removing prefix from it
                     package = resources[prefix].get("module_path")
-                    path = out[1][len(prefix):]
+                    prefix_len = len(prefix)
+                    path = out[1][prefix_len:]
                     break
             if path is None:
                 # Prefix doesn't exist in qrc file, comment out that line
-                logging.warning(f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file.")
+                logging.warning(
+                    f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file."
+                )
                 output += "# " + line + "\n"
                 continue
             if package is None:
@@ -143,15 +150,19 @@ def modify_py(py_input: str, resources: dict, tab_size: int = 4, compatible: boo
             # Get file name
             f_name = basename(out[1])
             tabs_offset = tabs[0] if tabs is not None else ""
-            output += f"{tabs_offset}with path(\"{resource_package}\", \"{f_name}\") as f_path:\n"
-            line = tab + line.replace(out[0], f"str(f_path)")
+            output += (
+                f'{tabs_offset}with path("{resource_package}", "{f_name}") as f_path:\n'
+            )
+            line = tab + line.replace(out[0], "str(f_path)")
 
         # Append new line into output
         output += line + "\n"
     return output
 
 
-def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_size: int = 4) -> str:
+def modify_py_sp(
+    py_input: str, resources: Dict[str, Any], resource_rel_path: str, tab_size: int = 4
+) -> str:
     """
     Modify python template, wrap resource files with path(resource_package, f_name) as f_path.
     :param str py_input: converted python template
@@ -172,9 +183,11 @@ def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_siz
         # Check if path was imported
         if not imported and line.startswith("from"):
             # Import all required packages
-            output += "import os\n" \
-                      "from os.path import dirname, normpath\n" \
-                      "from PyQt6.QtCore import QDir\n"
+            output += (
+                "import os\n"
+                "from os.path import dirname, normpath\n"
+                "from PyQt6.QtCore import QDir\n"
+            )
             imported = True
         elif not def_placeholder and line.startswith(f"{tab}def setupUi"):
             # Append placeholder after setupUi definition
@@ -189,16 +202,21 @@ def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_siz
                 for prefix in resources.keys():
                     if out[1].startswith(prefix):
                         # make file path by removing prefix from it
-                        path = out[1][len(prefix):]
+                        prefix_len = len(prefix)
+                        path = out[1][prefix_len:]
                         break
                 if path is None or prefix is None:
                     # Prefix doesn't exist in qrc file, comment out that line
-                    logging.warning(f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file.")
+                    logging.warning(
+                        f"Prefix \"{out[1].split('/')[1]}\" not found in qrc file."
+                    )
                     output += "# " + line + "\n"
                     continue
 
                 # Add prefix resource in format (prefix, resource_rel_path/filepath)
-                prefix_resources.add((prefix[1:-1], "/".join([resource_rel_path, dirname(path)])))
+                prefix_resources.add(
+                    (prefix[1:-1], "/".join([resource_rel_path, dirname(path)]))
+                )
                 # This creates file reference in format prefix:filename
                 f_path = f"{prefix[1:-1]}:{basename(out[1])}"
                 # Replace previous file reference of modified one
@@ -208,10 +226,12 @@ def modify_py_sp(py_input: str, resources: dict, resource_rel_path: str, tab_siz
         output += line + "\n"
     # Generate code which setSearchPath for every prefix:resource
     # To get absolute dir path, combine current __filename__ dir, resource relative path and normalize it
-    append_path_part = f'{tab * 2}prefix_resources = {list(prefix_resources)}\n' \
-                       f'{tab * 2}for prefix, resource in prefix_resources:\n' \
-                       f'{tab * 3}sp = QDir.searchPaths(prefix)\n' \
-                       f'{tab * 3}QDir.setSearchPaths(prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))]))\n'
+    append_path_part = (
+        f"{tab * 2}prefix_resources = {list(prefix_resources)}\n"
+        f"{tab * 2}for prefix, resource in prefix_resources:\n"
+        f"{tab * 3}sp = QDir.searchPaths(prefix)\n"
+        f"{tab * 3}QDir.setSearchPaths(prefix, set(sp + [normpath(os.path.join(dirname(__file__), resource))]))\n"
+    )
     output = output.replace(placeholder, append_path_part, 1)
     return output
 
