@@ -92,9 +92,9 @@ def test_sp_conversion_no_resources() -> None:
 
 def test_get_ui_files() -> None:
     ui_files = get_ui_files("pyqt6rc/test/test_resources/myPackage/templates")
-    assert "pyqt6rc/test/test_resources/myPackage/templates/template3.ui" in ui_files
-    assert "pyqt6rc/test/test_resources/myPackage/templates/template2.ui" in ui_files
-    assert "pyqt6rc/test/test_resources/myPackage/templates/template1.ui" in ui_files
+    assert os.path.normpath("pyqt6rc/test/test_resources/myPackage/templates/template3.ui") in ui_files
+    assert os.path.normpath("pyqt6rc/test/test_resources/myPackage/templates/template2.ui") in ui_files
+    assert os.path.normpath("pyqt6rc/test/test_resources/myPackage/templates/template1.ui") in ui_files
 
 
 def test_save_py() -> None:

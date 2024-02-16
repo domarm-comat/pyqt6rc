@@ -273,6 +273,6 @@ def get_ui_files(input_dir: str) -> List[str]:
     files = []
     for entry in os.scandir(input_dir):
         if entry.is_file(follow_symlinks=False) and entry.name.endswith(".ui"):
-            files.append(entry.path)
+            files.append(os.path.normpath(entry.path))
     logging.info(f"Found {len(files)} .ui files")
     return files
