@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyqt6rc"
-version = "0.6.1"
+version = "0.6.2"
 description = "PyQt6 UI templates resource converter"
 authors = ["Martin Domaracký <domarm@comat.sk>"]
 license = "MIT"

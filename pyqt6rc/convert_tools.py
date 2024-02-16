@@ -4,6 +4,7 @@ import xml.etree.ElementTree as Et
 from os.path import dirname, basename
 from typing import List, Optional, Dict, Any
 from pyqt6rc import resource_pattern, indent_pattern
+import subprocess
 
 
 def get_module_path(input_dir: str) -> str:
@@ -90,7 +91,7 @@ def ui_to_py(ui_file: str) -> str:
     :param str ui_file: input ui template file
     :return str: converted python template
     """
-    return os.popen(f"pyuic6 {ui_file}").read()
+    return subprocess.check_output(f"pyuic6 {ui_file}", universal_newlines=True, encoding="UTF-8")
 
 
 def modify_py(
@@ -258,7 +259,7 @@ def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> No
 
     output_filename = ".".join(parts)
     output_filename_path = os.path.join(output_dir, output_filename)
-    with open(output_filename_path, "w") as fp:
+    with open(output_filename_path, "w", encoding="UTF-8") as fp:
         fp.write(py_input)
     logging.info(f"{input_filename} > {output_filename}")
 
@@ -272,6 +273,6 @@ def get_ui_files(input_dir: str) -> List[str]:
     files = []
     for entry in os.scandir(input_dir):
         if entry.is_file(follow_symlinks=False) and entry.name.endswith(".ui"):
-            files.append(entry.path)
+            files.append(os.path.normpath(entry.path))
     logging.info(f"Found {len(files)} .ui files")
     return files
