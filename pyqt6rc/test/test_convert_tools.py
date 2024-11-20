@@ -3,7 +3,6 @@ from typing import Dict, Any
 
 import pytest
 
-
 from pyqt6rc.convert_tools import (
     parse_qrc,
     ui_to_py,
@@ -12,18 +11,41 @@ from pyqt6rc.convert_tools import (
     save_py,
     update_resources,
     modify_py_sp,
+    update_resources_sp,
+    pyside6_qrc_to_pyqt6,
 )
 
 
 def test_qrc_parse() -> None:
     parsed_qrc = parse_qrc("pyqt6rc/test/test_resources/resources.qrc")
     assert parsed_qrc == {
-        "/": {"aliases": {}, "module_path": ""},
-        "/icons/": {"aliases": {}, "module_path": ""},
-        "/subdir/icons/": {"aliases": {}, "module_path": ""},
-        "/subdir/icons_aliased/": {
-            "aliases": {"test.png": "aliased.png"},
+        "/": {
             "module_path": "",
+            "aliases": {},
+            "path": "pyqt6rc/test/test_resources/resources.qrc",
+            "basename": "resources.qrc",
+            "import_as": "resources",
+        },
+        "/icons/": {
+            "module_path": "",
+            "aliases": {},
+            "path": "pyqt6rc/test/test_resources/resources.qrc",
+            "basename": "resources.qrc",
+            "import_as": "resources",
+        },
+        "/subdir/icons/": {
+            "module_path": "",
+            "aliases": {},
+            "path": "pyqt6rc/test/test_resources/resources.qrc",
+            "basename": "resources.qrc",
+            "import_as": "resources",
+        },
+        "/subdir/icons_aliased/": {
+            "module_path": "",
+            "aliases": {"test.png": "aliased.png"},
+            "path": "pyqt6rc/test/test_resources/resources.qrc",
+            "basename": "resources.qrc",
+            "import_as": "resources",
         },
     }
 
@@ -58,7 +80,7 @@ def test_sp_conversion() -> None:
     reference_file = "template1_sp_reference.py"
 
     resources: Dict[str, Any] = {}
-    resource_rel_path = update_resources(
+    resource_rel_path = update_resources_sp(
         "pyqt6rc/test/test_resources/myPackage/templates/template1.ui", resources
     )
     convert_ui_to_py = ui_to_py(
@@ -76,7 +98,7 @@ def test_sp_conversion_no_resources() -> None:
     reference_file = "template3_reference.py"
 
     resources: Dict[str, Any] = {}
-    resource_rel_path = update_resources(
+    resource_rel_path = update_resources_sp(
         "pyqt6rc/test/test_resources/myPackage/templates/template3.ui", resources
     )
     convert_ui_to_py = ui_to_py(
@@ -119,3 +141,17 @@ def test_save_py() -> None:
                 assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
         finally:
             os.remove(f"pyqt6rc/test/{template_name}.py")
+
+
+def test_pyside6_qrc_to_pyqt6() -> None:
+    reference_file = "pyqt6_resources.py"
+    with open(
+        "pyqt6rc/test/test_resources/myPackage/resources/pyside_resources.py", "r"
+    ) as fp:
+        pyside_py_qrc_input = fp.read()
+
+    converted_qrc = pyside6_qrc_to_pyqt6(pyside_py_qrc_input)
+    with open(
+        f"pyqt6rc/test/test_resources/myPackage/resources/{reference_file}", "r"
+    ) as fp:
+        assert fp.read() == converted_qrc

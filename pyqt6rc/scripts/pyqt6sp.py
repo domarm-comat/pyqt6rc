@@ -8,8 +8,8 @@ from pyqt6rc.convert_tools import (
     ui_to_py,
     save_py,
     get_ui_files,
-    update_resources,
     modify_py_sp,
+    update_resources_sp,
 )
 from pyqt6rc.script_helpers import set_logger
 
@@ -84,7 +84,7 @@ else:
 def run() -> None:
     for input_file in input_files:
         resources: Dict[str, Any] = {}
-        resource_rel_path = update_resources(input_file, resources)
+        resource_rel_path = update_resources_sp(input_file, resources)
         py_input = ui_to_py(input_file)
         py_input = modify_py_sp(py_input, resources, resource_rel_path, args.tab_size)
         save_py(input_file, py_input, args.out)

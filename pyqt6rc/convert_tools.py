@@ -2,6 +2,7 @@ import logging
 import os
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 from pyqt6rc import resource_pattern, indent_pattern
 
@@ -52,14 +53,47 @@ def parse_qrc(qrc_file: str) -> Dict[str, Any]:
             if not prefix.endswith("/"):
                 prefix += "/"
 
+            basename = os.path.basename(qrc_file)
             resources[prefix] = {
                 "module_path": get_module_path(os.path.dirname(qrc_file)),
                 "aliases": aliases,
+                "path": qrc_file,
+                "basename": basename,
+                "import_as": Path(basename).stem,
             }
     return resources
 
 
-def update_resources(ui_file: str, resources: Dict[str, Any]) -> str:
+def update_resources(
+    ui_file: str, resources: Dict[str, Any]
+) -> Dict[str, List[Dict[str, Any]]]:
+    """
+    Read ui file and collect all input resource files.
+    :param str ui_file: input ui template
+    :param dict resources: input parsed resources
+    :return:
+    """
+    tree = Et.parse(ui_file)
+    root = tree.getroot()
+
+    if root.tag != "ui":
+        raise Exception("Invalid template file format.")
+
+    ui_dir = os.path.dirname(ui_file)
+    current_resources: Dict[str, List[Dict[str, Any]]] = {"qrc_info": []}
+    for child in root:
+        if child.tag == "resources":
+            for include in child:
+                location = include.attrib.get("location", None)
+                if location is not None:
+                    resource_location = os.path.normpath(os.path.join(ui_dir, location))
+                    qrc_info = parse_qrc(resource_location)
+                    resources.update(qrc_info)
+                    current_resources["qrc_info"].append(qrc_info)
+    return current_resources
+
+
+def update_resources_sp(ui_file: str, resources: Dict[str, Any]) -> str:
     """
     Read ui file and collect all input resource files.
     :param str ui_file: input ui template
@@ -82,6 +116,35 @@ def update_resources(ui_file: str, resources: Dict[str, Any]) -> str:
                     resource_location = os.path.normpath(os.path.join(ui_dir, location))
                     resources.update(parse_qrc(resource_location))
     return dirname(location) if location is not None else ""
+
+
+def qrc_to_py(qrc_file: str) -> str:
+    return os.popen(f"pyside6-rcc {qrc_file}").read()
+
+
+def pyside6_qrc_to_pyqt6(qrc_input: str) -> str:
+    return qrc_input.replace("PySide6", "PyQt6")
+
+
+def save_rcc_py(qrc_file: str, py_input: str) -> None:
+    """
+    Save python template into file.
+    Use ui filename and change .ui suffix to .py.
+    If output_dir is None, use same dir as a .ui template file to store converted .py template.
+    :param str qrc_file: input ui template file
+    :param str py_input: converted python template
+    :param str output_dir: output directory
+    :return: None
+    """
+    input_filename = os.path.basename(qrc_file)
+    parts = input_filename.split(".")
+    parts[-1] = "py"
+    output_dir = os.path.dirname(qrc_file)
+    output_filename = ".".join(parts)
+    output_filename_path = os.path.join(output_dir, output_filename)
+    with open(output_filename_path, "w") as fp:
+        fp.write(py_input)
+    logging.info(f"{input_filename} > {output_filename}")
 
 
 def ui_to_py(ui_file: str) -> str:
