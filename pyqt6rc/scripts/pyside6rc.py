@@ -6,10 +6,12 @@ from typing import Dict, Any
 from pyqt6rc import __version__
 from pyqt6rc.convert_tools import (
     ui_to_py,
-    modify_py,
     save_py,
     get_ui_files,
     update_resources,
+    qrc_to_py,
+    save_rcc_py,
+    pyside6_qrc_to_pyqt6,
 )
 from pyqt6rc.script_helpers import set_logger
 
@@ -20,16 +22,10 @@ description = [
     "",
     "Usage examples:",
     "  Convert all .ui files in CWD:",
-    "  pyqt6rc",
-    "",
-    "  Convert all .ui files in CWD using importlib_resources:",
-    "  pyqt6rc -c",
-    "",
-    "  Convert all .ui files in directory:",
-    "  pyqt6rc -i /directory/with/templates",
+    "  pyside6rc",
     "",
     "  Convert all .ui files in CWD, save output in different directory:",
-    "  pyqt6rc -o /directory/with/converted/templates",
+    "  pyside6rc -o /directory/with/converted/templates",
     "",
 ]
 
@@ -46,9 +42,6 @@ parser.add_argument(
     nargs="?",
 )
 parser.add_argument(
-    "-tb", "--tab_size", type=int, help="Size of tab in spaces, default=4", default=4
-)
-parser.add_argument(
     "-o",
     "--out",
     type=str,
@@ -57,10 +50,15 @@ parser.add_argument(
 )
 parser.add_argument("-s", "--silent", help="Supress logging", action="store_true")
 parser.add_argument(
-    "-c",
-    "--compatible",
-    help="Use compatible importlib_resources instead of native importlib."
-    "Requires importlib_resources.",
+    "-npc",
+    "--no-pyuic6-conversion",
+    help="Don't convert .ui files to .py files.",
+    action="store_true",
+)
+parser.add_argument(
+    "-niw",
+    "--no-import-write",
+    help="Don't write import to converted ui files.",
     action="store_true",
 )
 args = parser.parse_args()
@@ -83,10 +81,23 @@ else:
 
 def run() -> None:
     resources: Dict[str, Any] = {}
+    converted_qrcs = []
     for input_file in input_files:
         current_resources = update_resources(input_file, resources)
         py_input = ui_to_py(input_file)
-        # Do conversion only when resources are found in current ui file
-        if current_resources["qrc_info"]:
-            py_input = modify_py(py_input, resources, args.tab_size, args.compatible)
-        save_py(input_file, py_input, args.out)
+        injected_imports = []
+        for qrc_info in current_resources["qrc_info"]:
+            for info in qrc_info.values():
+                if info["path"] not in converted_qrcs:
+                    # Only do conversion once for same qrc file
+                    qrc_input = qrc_to_py(info["path"])
+                    qrc_input = pyside6_qrc_to_pyqt6(qrc_input)
+                    converted_qrcs.append(info["path"])
+                    save_rcc_py(info["path"], qrc_input)
+                import_qrc = f"import {info['module_path']}.{info['import_as']}"
+                if not args.no_import_write and import_qrc not in injected_imports:
+                    # Only inject qrc import once
+                    injected_imports.append(import_qrc)
+                    py_input += "\n" + import_qrc + "  # noqa"
+        if not args.no_pyuic6_conversion:
+            save_py(input_file, py_input, args.out)
