@@ -120,7 +120,9 @@ def update_resources_sp(ui_file: str, resources: Dict[str, Any]) -> str:
 
 
 def qrc_to_py(qrc_file: str) -> str:
-    return subprocess.check_output(["pyside6-rcc", qrc_file], universal_newlines=True, encoding="utf-8")
+    return subprocess.check_output(
+        ["pyside6-rcc", qrc_file], universal_newlines=True, encoding="utf-8"
+    )
 
 
 def pyside6_qrc_to_pyqt6(qrc_input: str) -> str:
@@ -154,7 +156,9 @@ def ui_to_py(ui_file: str) -> str:
     :param str ui_file: input ui template file
     :return str: converted python template
     """
-    return subprocess.check_output(["pyuic6", ui_file], universal_newlines=True, encoding="utf-8")
+    return subprocess.check_output(
+        ["pyuic6", ui_file], universal_newlines=True, encoding="utf-8"
+    )
 
 
 def modify_py(

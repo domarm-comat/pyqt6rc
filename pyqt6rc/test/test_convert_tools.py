@@ -71,7 +71,9 @@ def test_conversion(compatible: bool) -> None:
     modified_py = modify_py(convert_ui_to_py, resources, compatible=compatible)
 
     with open(
-        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r", encoding="utf-8"
+        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}",
+        "r",
+        encoding="utf-8",
     ) as fp:
         assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
@@ -89,7 +91,9 @@ def test_sp_conversion() -> None:
     modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
 
     with open(
-        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r", encoding="utf-8"
+        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}",
+        "r",
+        encoding="utf-8",
     ) as fp:
         assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
@@ -107,7 +111,9 @@ def test_sp_conversion_no_resources() -> None:
     modified_py = modify_py_sp(convert_ui_to_py, resources, resource_rel_path)
 
     with open(
-        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}", "r", encoding="utf-8"
+        f"pyqt6rc/test/test_resources/myPackage/templates/{reference_file}",
+        "r",
+        encoding="utf-8",
     ) as fp:
         assert fp.read().split("\n", 6)[5] == modified_py.split("\n", 6)[5]
 
@@ -146,12 +152,16 @@ def test_save_py() -> None:
 def test_pyside6_qrc_to_pyqt6() -> None:
     reference_file = "pyqt6_resources.py"
     with open(
-        "pyqt6rc/test/test_resources/myPackage/resources/pyside_resources.py", "r", encoding="utf-8"
+        "pyqt6rc/test/test_resources/myPackage/resources/pyside_resources.py",
+        "r",
+        encoding="utf-8",
     ) as fp:
         pyside_py_qrc_input = fp.read()
 
     converted_qrc = pyside6_qrc_to_pyqt6(pyside_py_qrc_input)
     with open(
-        f"pyqt6rc/test/test_resources/myPackage/resources/{reference_file}", "r", encoding="utf-8"
+        f"pyqt6rc/test/test_resources/myPackage/resources/{reference_file}",
+        "r",
+        encoding="utf-8",
     ) as fp:
         assert fp.read() == converted_qrc
