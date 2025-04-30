@@ -1,5 +1,6 @@
 import logging
 import os
+import subprocess
 import xml.etree.ElementTree as Et
 from os.path import dirname, basename
 from pathlib import Path
@@ -119,7 +120,7 @@ def update_resources_sp(ui_file: str, resources: Dict[str, Any]) -> str:
 
 
 def qrc_to_py(qrc_file: str) -> str:
-    return os.popen(f"pyside6-rcc {qrc_file}").read()
+    return subprocess.check_output(["pyside6-rcc", qrc_file], universal_newlines=True, encoding="utf-8")
 
 
 def pyside6_qrc_to_pyqt6(qrc_input: str) -> str:
@@ -142,7 +143,7 @@ def save_rcc_py(qrc_file: str, py_input: str) -> None:
     output_dir = os.path.dirname(qrc_file)
     output_filename = ".".join(parts)
     output_filename_path = os.path.join(output_dir, output_filename)
-    with open(output_filename_path, "w") as fp:
+    with open(output_filename_path, "w", encoding="utf-8") as fp:
         fp.write(py_input)
     logging.info(f"{input_filename} > {output_filename}")
 
@@ -153,7 +154,7 @@ def ui_to_py(ui_file: str) -> str:
     :param str ui_file: input ui template file
     :return str: converted python template
     """
-    return os.popen(f"pyuic6 {ui_file}").read()
+    return subprocess.check_output(["pyuic6", ui_file], universal_newlines=True, encoding="utf-8")
 
 
 def modify_py(
@@ -321,7 +322,7 @@ def save_py(ui_file: str, py_input: str, output_dir: Optional[str] = None) -> No
 
     output_filename = ".".join(parts)
     output_filename_path = os.path.join(output_dir, output_filename)
-    with open(output_filename_path, "w") as fp:
+    with open(output_filename_path, "w", encoding="utf-8") as fp:
         fp.write(py_input)
     logging.info(f"{input_filename} > {output_filename}")
 
